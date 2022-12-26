@@ -37,12 +37,26 @@ namespace ConsoleApp9.Menu
         {
             this.db = db;
         }
-
+        
+        bool ifInList(List<BaseActivity> currentActivities, string type)
+        {
+            foreach (var item in currentActivities)
+            {
+                if (item.Name == type)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         void MenuTable()
         {
             while (true)
             {
-                int choosen;
+                int choosen, innerChoosen;
+                try
+                {
                 Console.WriteLine("\n\n\n");
                 Console.WriteLine("Введiть 1, щоб перевiрити поточний профiль\nВведiть 2, щоб додати сьогоднiшню фiзичну вправу\nВведiть 3, щоб перевiрити статистику журналу про минулу активнiсть\nВведiть 4, щоб створити статистику щодо сьогоднiшньої активностi\nВведiть 5, щоб зупинити запущену програму\nВаш вибiр:");
                 choosen = Convert.ToInt32(Console.ReadLine());
@@ -70,6 +84,11 @@ namespace ConsoleApp9.Menu
                                         amount = Convert.ToInt32(Console.ReadLine());
                                         Console.WriteLine("Введiть висоту пiдтягувань: ");
                                         height = Convert.ToDouble(Console.ReadLine());
+                                         if (ifInList(currentActivities, "Підтягування"))
+                                            {
+                                                Console.WriteLine("Активність такого типу вже додано");
+                                                break;
+                                            }
                                         currentActivities.Add(new PullUps(45, amount, height));
                                         break;
                                     }
@@ -78,6 +97,11 @@ namespace ConsoleApp9.Menu
                                         int durationSecond;
                                         Console.WriteLine("Введiть тривалість активностi(секунди): ");
                                         durationSecond = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Пiдняття ваги"))
+                                            {
+                                                Console.WriteLine("Активність такого типу вже додано");
+                                                break;
+                                            }
                                         currentActivities.Add(new BaseActivity("Пiдняття ваги", durationSecond));
                                         break;
                                     }
