@@ -1,7 +1,10 @@
-﻿using ConsoleApp9.Models.Activity;
+﻿using ConsoleApp9.Models;
+using ConsoleApp9.Models.Activity;
 using ConsoleApp9.Models.EF;
+using ConsoleApp9.Models.Interfaces;
 using ConsoleApp9.Models.Product;
 using ConsoleApp9.Models.User;
+using ConsoleApp9.Sort;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
