@@ -115,6 +115,11 @@ namespace ConsoleApp9.Menu
                                         speed = Convert.ToDouble(Console.ReadLine());
                                         Console.WriteLine("Ввести кiлькiсть пройдених крокiв: ");
                                         steps = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Біг"))
+                                         {
+                                             Console.WriteLine("Активність такого типу вже додано");
+                                             break;
+                                         }
                                         currentActivities.Add(new Run(durationSecond, speed , steps));
                                         break;
                                     }
@@ -129,8 +134,12 @@ namespace ConsoleApp9.Menu
                                         speed = Convert.ToDouble(Console.ReadLine());
                                         Console.WriteLine("Ввести кiлькiсть крокiв");
                                         amountSteps = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Ходьба"))
+                                           {
+                                               Console.WriteLine("Активність такого типу вже додано");
+                                               break;
+                                           }
                                         currentActivities.Add(new Walking(durationSecond , speed, amountSteps));
-
                                         break;
                                     }
                                 case 5:
@@ -138,6 +147,11 @@ namespace ConsoleApp9.Menu
                                         int durationSecond;
                                         Console.WriteLine("Введiть тривалiсть активностi(секунди): ");
                                         durationSecond = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Плавання"))
+                                            {
+                                                Console.WriteLine("Активність такого типу вже додано");
+                                                break;
+                                            }
                                         currentActivities.Add(new BaseActivity("Плавання", durationSecond));
                                         break;
                                     }
@@ -146,6 +160,11 @@ namespace ConsoleApp9.Menu
                                         int durationSecond;
                                         Console.WriteLine("Введiть тривалiсть активностi(секунди): ");
                                         durationSecond = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Гiмнастика"))
+                                           {
+                                               Console.WriteLine("Активність такого типу вже додано");
+                                               break;
+                                           }
                                         currentActivities.Add(new BaseActivity("Гiмнастика", durationSecond));
                                         break;
                                     }
@@ -154,6 +173,11 @@ namespace ConsoleApp9.Menu
                                         int durationSecond;
                                         Console.WriteLine("Введiть тривалiсть активностi(секунди): ");
                                         durationSecond = Convert.ToInt32(Console.ReadLine());
+                                        if (ifInList(currentActivities, "Йога"))
+                                            {
+                                               Console.WriteLine("Активність такого типу вже додано");
+                                               break;
+                                           }
                                         currentActivities.Add(new BaseActivity("Йога", durationSecond));
                                         break;
                                     }
@@ -162,7 +186,26 @@ namespace ConsoleApp9.Menu
                         }
                     case 3:
                         {
-                            foreach (var unit in db.TrainingUnits.Include(x => x.Actives))
+                             Console.WriteLine("Введiть 1, щоб використати бульбашкове сортування\nВведiть 2, щоб використати сортування вставкою: ");
+                             innerChoosen = Convert.ToInt32(Console.ReadLine());
+                             ISort sort = null;
+                             var units = (db.TrainingUnits.Include(x => x.Actives)).ToList();
+                             switch (innerChoosen)
+                               {
+                                   case 1:
+                                       {
+                                          sort = new UnitsBubbleSort(units.ToList());
+                                          break;
+                                       }
+                                   case 2:
+                                       {
+
+                                           sort = new UnitsInsertionSort(units.ToList());
+                                           break;
+                                       }
+                               }
+                            sort.Sort();
+                            foreach (var unit in sort.Units)
                             {
                                 if(unit.User.Id == currentUser.Id)
                                 {
@@ -202,10 +245,34 @@ namespace ConsoleApp9.Menu
                             break;
                         }
                     case 5:
+                        {
+                                int calories;
+                                Console.WriteLine("Пошук минулої активностi, що має кiлькiсть споживаних калорiй бiльшу за введену.\nВведiть кiлькiсть споживаних калорiй: ");
+                                calories = Convert.ToInt32(Console.ReadLine());
+                                var units = (db.TrainingUnits.Include(x => x.Actives)).ToList();
+                                foreach (var item in units)
+                                {
+                                    if(item.User.Id == currentUser.Id)
+                                    {
+                                        if (item.CaloriesByDay > calories)
+                                        {
+                                            Console.WriteLine(item);
+                                        }
+                                    }
+                                }
+                                break;
+                           
+                             }
+                     case 6:
                         return;
-                }
             }
         }
+        catch(Exception ex)
+               {
+                   Console.WriteLine(ex.Message);
+               }
+        }
+   }
 
         public void StartMenu()
         {
@@ -218,9 +285,10 @@ namespace ConsoleApp9.Menu
                 users = db.Users.Where(x => x.NickName == nickName).ToList();
                 if (users.Count == 0)
                 {
-                    db.Users.Add(CreateUser(nickName));
-                    Console.WriteLine("Додано");
+                     db.Users.Add(CreateUser(nickName));
+                     Console.WriteLine("Додано");
                 }
+              
             }
             else
             {
