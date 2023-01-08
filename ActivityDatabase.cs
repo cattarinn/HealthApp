@@ -20,12 +20,9 @@ namespace ConsoleApp9.Models.EF
 
         public ActivityDatabase()
         {
-            if (!Database.CanConnect())
-            {
                 Database.EnsureCreated();
                 MyProductInitializer.Initialize(this);
                 SaveChanges();
-            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
