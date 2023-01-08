@@ -9,6 +9,8 @@ namespace ConsoleApp9.Initializer
     {
         public static void Initialize(ActivityDatabase db)
         {
+          if(db.Products.ToList().Count == 0)
+          {
             db.Products.AddRange(
                 new MyProduct("Апельсин", 38, 1, 0, 8),
                 new MyProduct("Банан", 91, 1.5, 0, 22),
@@ -29,6 +31,7 @@ namespace ConsoleApp9.Initializer
                 new MyProduct("Сир", 370, 25, 30, 0)
                 );
             db.SaveChanges();
+          }
         }
     }
 }
