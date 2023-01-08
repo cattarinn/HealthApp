@@ -52,11 +52,11 @@ namespace ConsoleApp9.Menu
         
         void MenuTable()
         {
+          try{
+                
             while (true)
             {
-                int choosen, innerChoosen;
-                try
-                {
+                int choosen;
                 Console.WriteLine("\n\n\n");
                 Console.WriteLine("Введiть 1, щоб перевiрити поточний профiль\nВведiть 2, щоб додати сьогоднiшню фiзичну вправу\nВведiть 3, щоб перевiрити статистику журналу про минулу активнiсть\nВведiть 4, щоб створити статистику щодо сьогоднiшньої активностi\nВведiть 5, щоб зупинити запущену програму\nВаш вибiр:");
                 choosen = Convert.ToInt32(Console.ReadLine());
@@ -186,11 +186,12 @@ namespace ConsoleApp9.Menu
                         }
                     case 3:
                         {
+                             int sortChoosen;
                              Console.WriteLine("Введiть 1, щоб використати бульбашкове сортування\nВведiть 2, щоб використати сортування вставкою: ");
-                             innerChoosen = Convert.ToInt32(Console.ReadLine());
+                             sortChoosen = Convert.ToInt32(Console.ReadLine());
                              ISort sort = null;
                              var units = (db.TrainingUnits.Include(x => x.Actives)).ToList();
-                             switch (innerChoosen)
+                             switch (sortChoosen)
                                {
                                    case 1:
                                        {
@@ -246,60 +247,83 @@ namespace ConsoleApp9.Menu
                         }
                     case 5:
                         {
-                                int calories;
-                                Console.WriteLine("Пошук минулої активностi, що має кiлькiсть споживаних калорiй бiльшу за введену.\nВведiть кiлькiсть споживаних калорiй: ");
-                                calories = Convert.ToInt32(Console.ReadLine());
+                               Console.WriteLine("\nВведiть 1, щоб знайти минулi активностi за певною датою(день-мiсяць-рi3к)\nВведiть 2, щоб знайти минулi активности за споживаними за день калорiями\n\t(Повернеться список активностей, що мають кiлькiсть споживаних калорiй бiльшку за введену)");
+                                int choosenSearch = Convert.ToInt32(Console.ReadLine());
+                                ISearch search = null;
+                                IEnumerable<TrainingUnit> unitList = new List<TrainingUnit>();
                                 var units = (db.TrainingUnits.Include(x => x.Actives)).ToList();
-                                foreach (var item in units)
+                                switch (choosenSearch)
                                 {
-                                    if(item.User.Id == currentUser.Id)
-                                    {
-                                        if (item.CaloriesByDay > calories)
+                                    case 1:
                                         {
-                                            Console.WriteLine(item);
+                                            DateTime date;
+                                            search = new SearchByDate(units);
+                                            Console.WriteLine("Введiть дату: ");
+                                            date = Convert.ToDateTime(Console.ReadLine());
+                                            unitList = search.Search(currentUser.Id, date);
+                                            break;
                                         }
-                                    }
+                                    case 2:
+                                        {
+                                            double calories;
+                                            search = new SearchByGetCaloriesMore(units);
+                                            Console.WriteLine("Введiть кiлькiсть споживаних калорiй: ");
+                                            calories = Convert.ToDouble(Console.ReadLine());
+                                            unitList = search.Search(currentUser.Id, calories);
+                                            break;
+                                        }
+                                }
+                                foreach (var item in unitList)
+                                {
+                                     Console.WriteLine(item);
                                 }
                                 break;
                            
-                             }
+                         }
                      case 6:
                         return;
+                }
             }
         }
-        catch(Exception ex)
-               {
-                   Console.WriteLine(ex.Message);
-               }
+         catch(Exception ex)
+          {
+              Console.WriteLine(ex.Message);
+              MenuTable();
+         }
         }
-   }
 
         public void StartMenu()
         {
-            string nickName;
-            List<UserProfile> users;
-            Console.WriteLine("Введiть ваш нiкнейм: ");
-            nickName = Console.ReadLine();  
-            if(db.Users.ToList().Count != 0)
-            {
-                users = db.Users.Where(x => x.NickName == nickName).ToList();
-                if (users.Count == 0)
+            try{
+                string nickName;
+                List<UserProfile> users;
+                Console.WriteLine("Введiть ваш нiкнейм: ");
+                nickName = Console.ReadLine();  
+                if(db.Users.ToList().Count != 0)
                 {
-                     db.Users.Add(CreateUser(nickName));
-                     Console.WriteLine("Додано");
+                    users = db.Users.Where(x => x.NickName == nickName).ToList();
+                    if (users.Count == 0)
+                    {
+                         db.Users.Add(CreateUser(nickName));
+                         Console.WriteLine("Додано");
+                    }
+
                 }
-              
-            }
-            else
-            {
-                db.Users.Add(CreateUser(nickName));
-                Console.WriteLine("Додано");
-            }
-            db.SaveChanges();
-            currentUser = db.Users.Where(x => x.NickName == nickName).First();
-            Console.WriteLine("\nПоточний юзер:");
-            Console.WriteLine(currentUser);
-            MenuTable();
+                else
+                {
+                    db.Users.Add(CreateUser(nickName));
+                    Console.WriteLine("Додано");
+                }
+                db.SaveChanges();
+                currentUser = db.Users.Where(x => x.NickName == nickName).First();
+                Console.WriteLine("\nПоточний юзер:");
+                Console.WriteLine(currentUser);
+                MenuTable();
+              }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
-    }
+      }
+   }
 }
