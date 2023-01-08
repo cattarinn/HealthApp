@@ -1,0 +1,10 @@
+using ConsoleApp9.Models.Activity;
+using System.Collections.Generic;
+
+namespace ConsoleApp9.Search.Interfaces
+{
+    public interface ISearch
+    {
+        IEnumerable<TrainingUnit> Search(int idUser, object value);
+    }
+}
