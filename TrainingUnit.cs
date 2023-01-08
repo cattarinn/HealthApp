@@ -137,7 +137,7 @@ namespace ConsoleApp9.Models.Activity
                 {
                     if(eatenProduct.ProductId == product.Id)
                     {
-                        CaloriesByDay += (product.Fats + product.Calories + product.Proteins + product.Carbohydrates) * eatenProduct.Grams;
+                        CaloriesByDay += ((product.Fats + product.Calories + product.Proteins + product.Carbohydrates)/100) * eatenProduct.Grams;
                     }
                 }
             }
